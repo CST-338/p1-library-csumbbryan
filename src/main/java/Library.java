@@ -2,6 +2,7 @@ import Utilities.Code;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
@@ -19,7 +20,7 @@ public class Library {
   }
 
   public Code init(String filename) {
-    Code code = Code.SUCCESS; //investigate this
+    Code code = null; //investigate this
     File file = new File(filename);
     Scanner fileScan;
     int bookCount = 0;
@@ -59,16 +60,8 @@ public class Library {
     } else {
       initReader(readerCount, fileScan);
       listReaders();
-      }
     }
 
-    //call listBooks()
-    //scan the next line and call intConvert
-    //use int from line to call initShelves
-    //call listShelves()
-    //scan next line and call intConvert
-    //call initReader using int from line
-    //call listReader
 
   }
 
@@ -77,7 +70,25 @@ public class Library {
   }
 
   private Code initBooks(int bookCount, Scanner scan) {
-
+    Code code = null;
+    List<String> tempString = new ArrayList<>();
+    if(bookCount < 0) {
+      return Code.LIBRARY_ERROR;
+    }
+    for(int i = 0; i<bookCount; i++) {
+      for(String str : scan.nextLine().split(",")) {
+        tempString.add(str);
+      }
+      Book book = new Book(
+          tempString.get(0),
+          tempString.get(1),
+          tempString.get(2),
+          convertInt(tempString.get(3), code),
+          tempString.get(4),
+          convertDate(tempString.get(5), code));
+      addBook(book);
+    }
+  return Code.SUCCESS;
   }
 
   private Code initShelves(int shelfCount, Scanner scan) {

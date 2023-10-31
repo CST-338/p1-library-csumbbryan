@@ -11,11 +11,11 @@ import java.util.Objects;
  */
 
 public class Reader {
-  private static final int CARD_NUMBER_ = 0;
-  private static final int NAME_ = 1;
-  private static final int PHONE_ = 2;
-  private static final int BOOK_COUNT_ = 3;
-  private static final int BOOK_START_ = 4;
+  public static final int CARD_NUMBER_ = 0;
+  public static final int NAME_ = 1;
+  public static final int PHONE_ = 2;
+  public static final int BOOK_COUNT_ = 3;
+  public static final int BOOK_START_ = 4;
 
   private int cardNumber;
   private String name;

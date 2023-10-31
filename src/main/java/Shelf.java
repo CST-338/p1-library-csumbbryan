@@ -3,8 +3,8 @@ import java.util.HashMap;
 import java.util.Objects;
 
 public class Shelf {
-  private static final int SHELF_NUMBER_ = 0;
-  private static final int SUBJECT = 1;
+  public static final int SHELF_NUMBER_ = 0;
+  public static final int SUBJECT = 1;
   private int shelfNumber;
   private String subject;
   private HashMap<Book, Integer> books;
