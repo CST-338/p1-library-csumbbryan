@@ -15,6 +15,7 @@ public class Shelf {
     this.books = new HashMap<>();
   }
 
+  //Created the below so the code would compile.
   public Shelf(int shelfNumber, String subject) {
     this.shelfNumber = shelfNumber;
     this.subject = subject;
