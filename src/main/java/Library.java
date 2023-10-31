@@ -1,4 +1,6 @@
 import Utilities.Code;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -17,12 +19,61 @@ public class Library {
   }
 
   public Code init(String filename) {
-    System.out.println("Not implemented");
-    return Code.NOT_IMPLEMENTED_ERROR;
+    Code code = Code.SUCCESS; //investigate this
+    File file = new File(filename);
+    Scanner fileScan;
+    int bookCount = 0;
+    int shelfCount = 0;
+    int readerCount = 0;
+    try {
+      fileScan = new Scanner(file);
+    } catch (FileNotFoundException e) {
+      return Code.FILE_NOT_FOUND_ERROR;
+    }
+    //obtain first number from first line
+    if(fileScan.hasNext()) {
+      bookCount = convertInt(fileScan.nextLine(), code);
+    }
+    //call initBooks using number from first line, and pass scanner
+    if(bookCount < 0) {
+      //handle code to return proper error code
+
+    } else {
+      initBooks(bookCount, fileScan);
+      listBooks();
+    }
+    if(fileScan.hasNext()) {
+      shelfCount = convertInt(fileScan.nextLine(), code);
+    }
+    if(shelfCount < 0) {
+      //handle code to return proper error code
+    } else {
+      initShelves(shelfCount, fileScan);
+      listShelves();
+    }
+    if(fileScan.hasNext()) {
+      readerCount = convertInt(fileScan.nextLine(), code);
+    }
+    if(readerCount < 0) {
+      //handle code to return proper error code
+    } else {
+      initReader(readerCount, fileScan);
+      listReaders();
+      }
+    }
+
+    //call listBooks()
+    //scan the next line and call intConvert
+    //use int from line to call initShelves
+    //call listShelves()
+    //scan next line and call intConvert
+    //call initReader using int from line
+    //call listReader
+
   }
 
   public String getName() {
-
+    return this.name;
   }
 
   private Code initBooks(int bookCount, Scanner scan) {
@@ -109,8 +160,33 @@ public class Library {
 
   }
 
-  static public Integer convertInt(String recordCountString, Code Code) {
-
+  /**
+   *
+   * @param recordCountString
+   * @param code
+   * @return if successful, returns count of the number associated with the String, such as book count or
+   * shelf count. If unsuccessful, returns numerical code associated with error.
+   */
+  static public Integer convertInt(String recordCountString, Code code) {
+    Integer count;
+    try {
+      count = Integer.parseInt(recordCountString);
+    } catch (NumberFormatException e) {
+      System.out.println("Value which caused the error: " + recordCountString);
+      System.out.println("Error message: " + code.getMessage());
+      return code.getCode();
+    }
+    switch(code) {
+      case BOOK_COUNT_ERROR:
+        System.out.println("Error: Could not read number of books");
+      case PAGE_COUNT_ERROR:
+        System.out.println("Error: could not parse page count");
+      case DATE_CONVERSION_ERROR:
+        System.out.println("Error: Could not parse date component");
+      default:
+        System.out.println("Error: Unknown conversion error");
+    }
+    return count;
   }
 
   static public LocalDate convertDate(String date, Code errorCode) {
