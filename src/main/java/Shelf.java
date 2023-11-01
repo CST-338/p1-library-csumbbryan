@@ -5,7 +5,7 @@ import java.util.Objects;
 public class Shelf {
   public static final int SHELF_NUMBER_ = 0;
   public static final int SUBJECT = 1;
-  private int shelfNumber;
+  private Integer shelfNumber;
   private String subject;
   private HashMap<Book, Integer> books;
 
@@ -80,7 +80,7 @@ public class Shelf {
         return Code.SUCCESS;
       }
     }
-    if(!books.containsKey(book) && book.subject.equals(this.subject)) {
+    if(!books.containsKey(book) && book.getSubject().equals(this.subject)) {
       books.put(book, 1);
       System.out.println(book.toString() + this.toString());
       return Code.SUCCESS;
@@ -91,7 +91,7 @@ public class Shelf {
   public Code removeBook(Book book) {
     if(books.containsKey(book)) {
       if(books.get(book) == 0) {
-        System.out.println(book.title + " is not on shelf " + this.subject);
+        System.out.println(book.getTitle() + " is not on shelf " + this.subject);
         return Code.BOOK_NOT_IN_INVENTORY_ERROR;
       } else {
         int count = books.get(book);
@@ -100,7 +100,7 @@ public class Shelf {
       }
 
     } else {
-      System.out.println("No copies of " + book.title + " remain on shelf " + this.subject);
+      System.out.println("No copies of " + book.getTitle() + " remain on shelf " + this.subject);
       return Code.BOOK_NOT_IN_INVENTORY_ERROR;
     }
   }
@@ -108,8 +108,8 @@ public class Shelf {
   public String listBooks() {
     StringBuilder bookList = new StringBuilder(new String());
     for(Book book : this.books.keySet()) {
-      bookList.append(book.title).append(" by ").append(book.author).append(" ISBN:")
-          .append(book.isbn).append(" ").append(this.books.get(book)).append("\n");
+      bookList.append(book.getTitle()).append(" by ").append(book.getAuthor()).append(" ISBN:")
+          .append(book.getISBN()).append(" ").append(this.books.get(book)).append("\n");
     }
     return this.books.keySet().size()
         + " book on shelf: "
