@@ -20,7 +20,6 @@ public class Library {
     readers = new ArrayList<>();
     shelves = new HashMap<>();
     books = new HashMap<>();
-    System.out.println("Barely implemented");
   }
 
   public Code init(String filename) {
@@ -86,16 +85,6 @@ public class Library {
       if(tempString.size() <= Book.DUE_DATE_) {
         return Code.UNKNOWN_ERROR;
       }
-      //Troubleshooting Begins
-      System.out.println("Adding Book: ISBN: "
-          + tempString.get(Book.ISBN_)
-          + " Title: " + tempString.get(Book.TITLE_)
-          + " Subject: " + tempString.get(Book.SUBJECT_)
-          + " Page Count: " + convertInt(tempString.get(Book.PAGE_COUNT_), Code.PAGE_COUNT_ERROR)
-          + " Author: " + tempString.get(Book.AUTHOR_)
-          + " Due Date: " + convertDate(tempString.get(Book.DUE_DATE_), Code.DUE_DATE_ERROR)
-          );
-      //Troubleshooting Ends
       if(convertInt(tempString.get(Book.PAGE_COUNT_), Code.PAGE_COUNT_ERROR) <= 0) {
         return Code.PAGE_COUNT_ERROR;
       }
@@ -156,7 +145,7 @@ public class Library {
       }
 
       Reader reader = new Reader(
-          convertInt(tempString.get(Reader.CARD_NUMBER_), Code.READER_COUNT_ERROR),
+          convertInt(tempString.get(Reader.CARD_NUMBER_), Code.READER_COUNT_ERROR), //THIS MAY NEED TO BE TESTED FIRST
           tempString.get(Reader.NAME_),
           tempString.get(Reader.PHONE_));
       addReader(reader);
@@ -272,7 +261,7 @@ public class Library {
 
     //Check if book is in HashMap, else print error
     if(!books.containsKey(book)) {
-      System.out.println("ERROR: could no find " + book);
+      System.out.println("ERROR: could not find " + book);
       return Code.BOOK_NOT_IN_INVENTORY_ERROR;
     }
 
@@ -283,6 +272,8 @@ public class Library {
     }
 
     //Check if shelf has enough copies (1 or more), else print error
+    Shelf tempShelf = getShelf(book.getSubject());
+    int bookCount = getShelf(book.getSubject()).getBookCount(book);
     if(getShelf(book.getSubject()).getBookCount(book) < 1) {
       System.out.println("ERROR: no copies of " + book + " remain");
       return Code.BOOK_NOT_IN_INVENTORY_ERROR;
@@ -309,11 +300,9 @@ public class Library {
       if(tempBook.getISBN().equals(isbn)) {
         book = tempBook;
         return book;
-      } else {
-        System.out.println("ERROR: Could not find a book with isbn: " + isbn);
-        return null;
       }
     }
+    System.out.println("ERROR: Could not find book with ISBN: " + isbn);
     return null;
   }
 
@@ -330,12 +319,20 @@ public class Library {
   }
 
   public Code addShelf(String shelfSubject) {
-    //Create shelf object and assign shelf number as size of shelves plus one
-    Integer shelfCount = shelves.size()+1;
-    Shelf newShelf = new Shelf(shelfCount, shelfSubject);
+    //Create shelf object and assign shelf number as size of shelves plus one - THIS DOESN'T WORK
+    //Integer shelfCount = shelves.size()+1;
+    //Shelf newShelf = new Shelf(shelfCount, shelfSubject);
+
 
     //Call addShelf with new Shelf Object
-    return addShelf(newShelf);
+    if(shelves.containsKey(shelfSubject)) {
+      System.out.println("ERROR: (addShelf(String) Shelf already exists " + shelfSubject);
+      return Code.SHELF_EXISTS_ERROR;
+    } else {
+      int shelfCount = shelves.size()+1;
+      Shelf newShelf = new Shelf(shelfCount, shelfSubject);
+      return addShelf(newShelf);
+    }
   }
 
   public Code addShelf(Shelf shelf) {
@@ -353,7 +350,8 @@ public class Library {
     shelves.put(shelf.getSubject(), shelf);
     for(Book book : books.keySet()) {
       if(book.getSubject().equals(shelf.getSubject())) {
-        shelf.addBook(book);
+        addBookToShelf(book, shelf);
+        shelf.setBookCount(book, books.get(book)); //ADDED THIS TO ADDRESS SETTING COUNT ON INIT
       }
     }
     return Code.SUCCESS;

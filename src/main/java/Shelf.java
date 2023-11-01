@@ -118,4 +118,15 @@ public class Shelf {
         + "\n" + bookList;
   }
 
+  //ADDED TO ADDRESS BOOK QUANTITY SETTING WHEN INITIALIZING
+  public Code setBookCount(Book book, int count) {
+    if(this.books.containsKey(book)) {
+      this.books.replace(book, count);
+      return Code.SUCCESS;
+    } else {
+      return Code.BOOK_NOT_IN_INVENTORY_ERROR;
+    }
+
+  }
+
 }
