@@ -3,10 +3,17 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * @author Bryan Zanoli
+ * @since October 30, 2023
+ *
+ * Abstract: ...
+ */
 public class Library {
   private static final int LENDING_LIMIT = 5;
   private String name;
@@ -22,6 +29,7 @@ public class Library {
     books = new HashMap<>();
   }
 
+  //This method may be missing: return error code by parseInt return value
   public Code init(String filename) {
     Code code = null; //investigate this
     File file = new File(filename);
@@ -38,7 +46,7 @@ public class Library {
     if(fileScan.hasNext()) {
       bookCount = convertInt(fileScan.nextLine(), Code.BOOK_COUNT_ERROR);
       if(bookCount < 0) {
-        return Code.BOOK_COUNT_ERROR;
+        return errorCode(bookCount);
       } else {
         code = initBooks(bookCount, fileScan);
         listBooks();
@@ -50,7 +58,7 @@ public class Library {
       if(shelfCount < 0) {
         return Code.SHELF_COUNT_ERROR;
       } else {
-        initShelves(shelfCount, fileScan);
+        code = initShelves(shelfCount, fileScan);
         listShelves();
       }
     }
@@ -60,7 +68,7 @@ public class Library {
       if(readerCount < 0) {
         return Code.READER_COUNT_ERROR;
       } else {
-        initReader(readerCount, fileScan);
+        code = initReader(readerCount, fileScan);
         listReaders();
       }
     }
@@ -79,9 +87,10 @@ public class Library {
     }
     for(int i = 0; i<bookCount; i++) {
       List<String> tempString = new ArrayList<>();
-      for(String str : scan.nextLine().split(",")) {
-        tempString.add(str);
-      }
+      //USING RECOMMENDED COLLECTIONS.ADDALL METHOD
+      Collections.addAll(tempString, scan.nextLine().split(","));
+
+      //ADDED BELOW FUNCTIONALITY TO AVOID PARSING IMPROPER ENTRIES
       if(tempString.size() <= Book.DUE_DATE_) {
         return Code.UNKNOWN_ERROR;
       }
@@ -110,9 +119,8 @@ public class Library {
     }
     for(int i = 0; i<shelfCount; i++) {
       List<String> tempString = new ArrayList<>();
-      for(String str : scan.nextLine().split(",")) {
-        tempString.add(str);
-      }
+      //USING RECOMMENDED COLLECTIONS.ADDALL METHOD
+      Collections.addAll(tempString, scan.nextLine().split(","));
       if(tempString.isEmpty()) {
         return Code.UNKNOWN_ERROR;
       }
@@ -137,15 +145,15 @@ public class Library {
     }
     for(int i = 0; i<readerCount; i++) {
       List<String> tempString = new ArrayList<>();
-      for(String str : scan.nextLine().split(",")) {
-        tempString.add(str);
-      }
+      //USING RECOMMENDED COLLECTIONS.ADDALL METHOD
+      Collections.addAll(tempString, scan.nextLine().split(","));
       if(tempString.isEmpty()) {
         return Code.UNKNOWN_ERROR;
       }
 
       Reader reader = new Reader(
-          convertInt(tempString.get(Reader.CARD_NUMBER_), Code.READER_COUNT_ERROR), //THIS MAY NEED TO BE TESTED FIRST
+          //THIS MAY NEED TO BE TESTED FIRST
+          convertInt(tempString.get(Reader.CARD_NUMBER_), Code.READER_COUNT_ERROR),
           tempString.get(Reader.NAME_),
           tempString.get(Reader.PHONE_));
       addReader(reader);
@@ -154,7 +162,7 @@ public class Library {
         //find books based on using getBookByISBN
         Book book = getBookByISBN(tempString.get(j));
         if(book == null) {
-          System.out.println("ERROR");
+          System.out.println("ERROR" + ": Could not find book for " + reader.getName()); //ADDED LINE FOR FURTHER TROUBLESHOOTING
           break;
         } else {
           book.setDueDate(convertDate(tempString.get(j+1), Code.DUE_DATE_ERROR));
@@ -319,12 +327,6 @@ public class Library {
   }
 
   public Code addShelf(String shelfSubject) {
-    //Create shelf object and assign shelf number as size of shelves plus one - THIS DOESN'T WORK
-    //Integer shelfCount = shelves.size()+1;
-    //Shelf newShelf = new Shelf(shelfCount, shelfSubject);
-
-
-    //Call addShelf with new Shelf Object
     if(shelves.containsKey(shelfSubject)) {
       System.out.println("ERROR: (addShelf(String) Shelf already exists " + shelfSubject);
       return Code.SHELF_EXISTS_ERROR;
@@ -358,19 +360,14 @@ public class Library {
   }
 
   public Shelf getShelf(Integer shelfNumber) {
-    Shelf returnShelf = new Shelf();
-    boolean found = false;
     for (Shelf currentShelf : shelves.values()) {
       if(currentShelf.getShelfNumber() == shelfNumber) {
-        returnShelf = currentShelf;
+        return currentShelf;
       }
     }
-    if(found) {
-      return returnShelf;
-    } else {
-      System.out.println("No shelf number " + shelfNumber + " found");
-      return null;
-    }
+    //If for loop doesn't find shelf, print no shelf found and return null
+    System.out.println("No shelf number " + shelfNumber + " found");
+    return null;
   }
 
   public Shelf getShelf(String subject) {
@@ -418,7 +415,10 @@ public class Library {
 
     for(Reader rdr : readers) {
       if(rdr.getCardNumber() == reader.getCardNumber()) {
-        System.out.println(rdr.getName() + " and " + reader.getName() + " have the same card number!");
+        System.out.println(rdr.getName()
+            + " and "
+            + reader.getName()
+            + " have the same card number!");
         return Code.READER_CARD_NUMBER_ERROR;
       }
     }
@@ -449,8 +449,9 @@ public class Library {
    *
    * @param recordCountString
    * @param code
-   * @return if successful, returns count of the number associated with the String, such as book count or
-   * shelf count. If unsuccessful, returns numerical code associated with error.
+   * @return if successful, returns count of the number associated with the String,
+   * such as book count or shelf count.
+   * If unsuccessful, returns numerical code associated with error.
    */
   static public Integer convertInt(String recordCountString, Code code) {
     Integer count;
@@ -480,8 +481,6 @@ public class Library {
     return count;
   }
 
-  //Should the if statements be cleaned up below? Could we call convertDate recursively?
-  //
   static public LocalDate convertDate(String date, Code errorCode) {
     Integer year;
     Integer month;
@@ -517,7 +516,7 @@ public class Library {
   }
 
   static public int getLibraryCardNumber() {
-    return libraryCard++; //Not implemented
+    return libraryCard++; //Should this also increment the variable, or just return the value?
   }
 
   private Code errorCode(int codeNumber) {
@@ -528,5 +527,4 @@ public class Library {
     }
     return Code.UNKNOWN_ERROR;
   }
-
 }
