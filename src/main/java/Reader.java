@@ -11,6 +11,10 @@ import java.util.Objects;
  */
 
 public class Reader {
+
+  /**
+   *
+   */
   public static final int CARD_NUMBER_ = 0;
   public static final int NAME_ = 1;
   public static final int PHONE_ = 2;
@@ -22,6 +26,12 @@ public class Reader {
   private String phone;
   private List<Book> books;
 
+  /**
+   *
+   * @param cardNumber
+   * @param name
+   * @param phone
+   */
   public Reader(int cardNumber, String name, String phone) {
     this.cardNumber = cardNumber;
     this.name = name;
