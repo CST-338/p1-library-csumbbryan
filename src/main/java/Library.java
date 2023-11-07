@@ -152,13 +152,12 @@ public class Library {
       }
 
       Reader reader = new Reader(
-          //THIS MAY NEED TO BE TESTED FIRST
           convertInt(tempString.get(Reader.CARD_NUMBER_), Code.READER_COUNT_ERROR),
           tempString.get(Reader.NAME_),
           tempString.get(Reader.PHONE_));
       addReader(reader);
       //for each reader, add a book, based on parsing book count
-      for(int j = 4; j < tempString.size(); j+=2) {
+      for(int j = Reader.BOOK_START_; j < tempString.size(); j+=2) {
         //find books based on using getBookByISBN
         Book book = getBookByISBN(tempString.get(j));
         if(book == null) {
