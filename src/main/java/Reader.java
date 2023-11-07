@@ -122,9 +122,9 @@ public class Reader {
     if (this.hasBook(book)) {
       books.remove(book);
       if(!this.hasBook(book)) {
-        return Code.READER_COULD_NOT_REMOVE_BOOK_ERROR;
-      } else {
         return Code.SUCCESS;
+      } else {
+        return Code.READER_COULD_NOT_REMOVE_BOOK_ERROR;
       }
     } else {
       return Code.READER_DOESNT_HAVE_BOOK_ERROR;
