@@ -215,11 +215,11 @@ public class Shelf {
   public String listBooks() {
     StringBuilder bookList = new StringBuilder(new String());
     for(Book book : this.books.keySet()) {
-      bookList.append(book.getTitle()).append(" by ").append(book.getAuthor()).append(" ISBN:")
+      bookList.append(book.getTitle()).append(" by ").append(book.getAuthor()).append(" ISBN: ")
           .append(book.getISBN()).append(" ").append(this.books.get(book)).append("\n");
     }
     return this.books.keySet().size()
-        + " book on shelf: "
+        + (this.books.keySet().size()%2 == 1 ? " book on shelf: " : " books on shelf: ")
         + shelfNumber
         + " : " + this.subject
         + "\n" + bookList;

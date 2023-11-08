@@ -5,7 +5,7 @@ import java.util.Objects;
 
 /**
  * @author Bryan Zanoli
- * @since OCtober 30, 2023
+ * @since October 30, 2023
  *
  * Abstract: This class represents a library systems reader record, associating certain personal
  * information (name and phone number) with the reader's identifying value (library card) and list

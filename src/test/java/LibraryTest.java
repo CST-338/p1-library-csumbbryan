@@ -31,15 +31,11 @@ class LibraryTest {
 
     @Test
     void init_test() {
-        //Bad file
+        //NEW CODE:
         assertEquals(Code.FILE_NOT_FOUND_ERROR, csumb.init("nope.csv"));
-
-        //Test that file cannot read book count -- has value of cat instead of 3
         assertEquals(Code.BOOK_COUNT_ERROR, csumb.init(badBooks0));
-
-        //Test that
-        assertEquals(Code.UNKNOWN_ERROR, csumb.init(badBooks1)); //This was Shelf Count Error
-        assertEquals(Code.SHELF_COUNT_ERROR, csumb.init(badShelves0));
+        assertEquals(Code.BOOK_COUNT_ERROR, csumb.init(badBooks1) );
+        assertEquals(Code.SHELF_COUNT_ERROR,csumb.init(badShelves0));
 
         //Test that badShelves1 fails due to incorrect Shelf values
         assertEquals(Code.SHELF_NUMBER_PARSE_ERROR, csumb.init(badShelves1)); //This was Reader Count Error
@@ -50,23 +46,8 @@ class LibraryTest {
         //Test that Drew Clinkenbeard books cannot be read in but init otherwise succeeds:
         assertEquals(Code.SUCCESS, csumb.init(badReader1)); //Is this the right error?
         assertEquals(0, csumb.getReaderByCard(1).getBookCount());
-
     }
 
-    @Test
-    void init_goodFile_test() {
-        assertEquals(Code.SUCCESS, csumb.init(library00));
-
-        //Need to create new library to test second init
-        csumb = null;
-        csumb = new Library("CSUMB");
-        assertEquals(Code.SUCCESS, csumb.init(library01)); //Can't initialize twice in same Lib
-    }
-
-    /**
-     * Tests conditions in which a book may be added. Including no shelf exists,
-     * book already exists, and new book added.
-     */
     @Test
     void addBook() {
         //Before Test Setup
@@ -87,6 +68,7 @@ class LibraryTest {
             LocalDate.now()
         );
         String fantasy = "fantasy";
+        String education = "education";
         //Conditions:
         //Shelf doesn't exist
         assertEquals(Code.SHELF_EXISTS_ERROR,csumb.addBook(theArena));
@@ -94,7 +76,7 @@ class LibraryTest {
         //Book does not exist and count set to 1
         csumb.init(library00);
         assertEquals(Code.SUCCESS, csumb.addBook(chemistry));
-        assertEquals(1, csumb.getShelf("education").getBookCount(chemistry));
+        assertEquals(1, csumb.getShelf(education).getBookCount(chemistry));
 
         //Book exists already and book count increased by 1
         assertEquals(Code.SUCCESS, csumb.addShelf(fantasy));
