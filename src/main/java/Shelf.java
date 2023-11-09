@@ -192,7 +192,8 @@ public class Shelf {
   public Code removeBook(Book book) {
     if(books.containsKey(book)) {
       if(books.get(book) == 0) {
-        System.out.println(book.getTitle() + " is not on shelf " + this.subject);
+        //NEEDED TO SWAP ERROR STATEMENTS AS WAS INCORRECT WHEN SHELF.JAVA SUBMITTED
+        System.out.println("No copies of " + book.getTitle() + " remain on shelf " + this.subject);
         return Code.BOOK_NOT_IN_INVENTORY_ERROR;
       } else {
         int count = books.get(book);
@@ -201,7 +202,7 @@ public class Shelf {
       }
 
     } else {
-      System.out.println("No copies of " + book.getTitle() + " remain on shelf " + this.subject);
+      System.out.println(book.getTitle() + " is not on shelf " + this.subject);
       return Code.BOOK_NOT_IN_INVENTORY_ERROR;
     }
   }
