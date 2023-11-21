@@ -139,9 +139,12 @@ public class Library {
       return LocalDate.of(1970, 1, 1);
     } else {
       String[] tempStringArray = date.split("-");
-      if (tempStringArray.length != 3) {
+      if (tempStringArray.length != 3 ||
+          tempStringArray[0].length() != 4 ||
+          tempStringArray[1].length() != 2 ||
+          tempStringArray[2].length() != 2) {
         System.out.println("ERROR: date conversion error, could not parse " + date);
-        System.out.println("Using default date (01-jan-1970");
+        System.out.println("Using default date (01-jan-1970)");
         return LocalDate.of(1970, 1, 1);
       }
       year = convertInt(tempStringArray[0], Code.DATE_CONVERSION_ERROR);
@@ -507,7 +510,8 @@ public class Library {
       System.out.println("No shelf for " + book);
       return Code.SHELF_EXISTS_ERROR;
     }
-    return getShelf(book.getSubject()).addBook(book);
+    Code code = getShelf(book.getSubject()).addBook(book);
+    return code;
   }
 
   /**
@@ -594,6 +598,12 @@ public class Library {
       return Code.BOOK_NOT_IN_INVENTORY_ERROR;
     }
 
+    //Check if reader already has book checked out
+    if(reader.hasBook(book)) {
+      System.out.println(reader.getName() + " already has " + book.getTitle() + " checked out");
+      return Code.BOOK_ALREADY_CHECKED_OUT_ERROR;
+    }
+
     //Check if book is on shelf, else print error
     if (getShelf(book.getSubject()) == null) {
       System.out.println("no shelf for " + book.getSubject() + " books!");
@@ -616,7 +626,8 @@ public class Library {
     }
 
     //Check if shelf.removeBook returns success, else print error
-    return getShelf(book.getSubject()).removeBook(book);
+    Code code = getShelf(book.getSubject()).removeBook(book);
+    return code;
   }
 
   /**
