@@ -6,6 +6,13 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * @author Bryan Zanoli
+ * @since October 30, 2023
+ *
+ * Abstract: Unit tests for all relevant Library class methods. Excludes basic getters and setters,
+ * which pass testing through other calling methods.
+ */
 class LibraryTest {
 
   Library csumb = null;
