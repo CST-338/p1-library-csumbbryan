@@ -90,13 +90,12 @@ public class Library {
    * count or shelf count. If unsuccessful, returns numerical code associated with error.
    */
   static public Integer convertInt(String recordCountString, Code code) {
-    Integer count;
+    Integer count = 0;
     try {
       count = Integer.parseInt(recordCountString);
     } catch (NumberFormatException e) {
       System.out.println("Value which caused the error: " + recordCountString);
       System.out.println("Error message: " + code.getMessage());
-
       //This switch statement doesn't seem to work.
       switch (code) {
         case BOOK_COUNT_ERROR:
@@ -114,7 +113,7 @@ public class Library {
       }
       return code.getCode();
     }
-    return count;
+      return count;
   }
 
   /**
@@ -159,7 +158,7 @@ public class Library {
       if (day < 0) {
         System.out.println("Error converting date: Day " + day);
       }
-      if (!(year < 0 && month < 0 && day < 0)) {
+      if (!(year < 0 || month < 0 || day < 0)) {
         return LocalDate.of(year, month, day);
       } else {
         System.out.println("Using default date (01-jan-1970)");
@@ -173,7 +172,7 @@ public class Library {
    * @return
    */
   static public int getLibraryCardNumber() {
-    return libraryCard++; //Should this also increment the variable, or just return the value?
+    return libraryCard+1; //Should this also increment the variable, or just return the value?
   }
 
   /**
@@ -626,8 +625,8 @@ public class Library {
     }
 
     //Check if shelf.removeBook returns success, else print error
-    Code code = getShelf(book.getSubject()).removeBook(book);
-    return code;
+    Code codeShelf = getShelf(book.getSubject()).removeBook(book);
+    return codeShelf;
   }
 
   /**

@@ -88,16 +88,16 @@ class LibraryTest {
   @Test
   void returnBook() {
     csumb.init(library00);
-    Book hitchhickers = csumb.getBookByISBN("42-w-87");
+    Book hitchhikers = csumb.getBookByISBN("42-w-87");
     Book Dune = csumb.getBookByISBN("34-w-34");
     Reader reader = csumb.getReaderByCard(4);
 
     //Test that reader doesn't have Dune
     assertEquals(Code.READER_DOESNT_HAVE_BOOK_ERROR, csumb.returnBook(reader, Dune));
-    //Test that reader has Hitchhickers Guide to the Galaxy
-    assertEquals(Code.SUCCESS, csumb.returnBook(reader, hitchhickers));
-    //Test that reader no longer has Hitchhickers Guide to the Galaxy
-    assertEquals(Code.READER_DOESNT_HAVE_BOOK_ERROR, csumb.returnBook(reader, hitchhickers));
+    //Test that reader has Hitchhikers Guide to the Galaxy
+    assertEquals(Code.SUCCESS, csumb.returnBook(reader, hitchhikers));
+    //Test that reader no longer has Hitchhikers Guide to the Galaxy
+    assertEquals(Code.READER_DOESNT_HAVE_BOOK_ERROR, csumb.returnBook(reader, hitchhikers));
     //Test that the reader now only has 1 book
     assertEquals(1, reader.getBooks().size());
   }
@@ -121,7 +121,7 @@ class LibraryTest {
     assertEquals(Code.SUCCESS, csumb.returnBook(theArena));
     //Test that theArena was added to the shelf but not added to the library due to nature of
     //returnBook(book) method
-    assertEquals(null, csumb.getBookByISBN("0101"));
+    assertNull(csumb.getBookByISBN("0101"));
   }
 
   @Test
@@ -222,12 +222,13 @@ class LibraryTest {
 
     assertEquals(hitchhikers, csumb.getBookByISBN(hitchhikersISBN));
     assertNotEquals(dune, csumb.getBookByISBN(duneISBN));
-    assertEquals(null, csumb.getBookByISBN(notInLibrary));
+    assertNull(csumb.getBookByISBN(notInLibrary));
   }
 
   @Test
   void listShelves() {
-csumb.init(library00);
+    assertEquals(0, csumb.listShelves());
+    csumb.init(library00);
     assertEquals(3, csumb.listShelves());
   }
 
@@ -310,31 +311,122 @@ csumb.init(library00);
 
   @Test
   void getReaderByCard() {
+    int cardNumber = 1;
+    int cardNumberNotInLibrary = 0;
+    Reader reader = new Reader(cardNumber, "Bob Smith", "555-555-0001");
+
+    assertNull(csumb.getReaderByCard(cardNumber));
+    assertEquals(Code.SUCCESS, csumb.addReader(reader));
+    assertEquals(reader, csumb.getReaderByCard(cardNumber));
+    assertNull(csumb.getReaderByCard(cardNumberNotInLibrary));
   }
 
   @Test
   void addReader() {
+    int cardNumber = 1;
+    int cardNumberNotInLibrary = 0;
+    Reader reader = new Reader(cardNumber, "Bob Smith", "555-555-0001");
+
+    //Ensure reader is added successfully
+    assertEquals(Code.SUCCESS, csumb.addReader(reader));
+
+    //Check if reader already exists
+    assertEquals(Code.READER_ALREADY_EXISTS_ERROR, csumb.addReader(reader));
+
+    csumb.removeReader(reader);
+    csumb.init(library00);
+
+    //Check if another reader already has the same card number
+    assertEquals(Code.READER_CARD_NUMBER_ERROR, csumb.addReader(reader));
+
+    //Ensure reader count is incremented
+    int readerCount = csumb.listReaders();
+    assertEquals(Code.SUCCESS, csumb.addReader(
+        new Reader(Library.getLibraryCardNumber(), "Bob Smith", "555-555-0001")));
+    assertEquals(readerCount+1, csumb.listReaders());
   }
 
   @Test
   void removeReader() {
+    int cardNumber = 1;
+    String fantasy = "fantasy";
+    Reader reader = new Reader(cardNumber, "Bob Smith", "555-555-0001");
+    Book theArena = new Book(
+        "0101",
+        "The Arena",
+        "fantasy",
+        300,
+        "Robert Smith",
+        LocalDate.now()
+    );
+
+    //Check that reader cannot be removed if not in library
+    assertEquals(Code.READER_NOT_IN_LIBRARY_ERROR, csumb.removeReader(reader));
+
+    //Check that reader can be removed after being added
+    csumb.addReader(reader);
+    assertEquals(1, csumb.listReaders());
+
+    //Check that reader cannot be removed if they have books checked out
+    csumb.addBook(theArena);
+    csumb.addShelf(fantasy);
+    csumb.checkOutBook(reader, theArena);
+    assertEquals(Code.READER_STILL_HAS_BOOKS_ERROR,
+        csumb.removeReader(reader));
+
+    //Check that reader can be removed after returning all books
+    csumb.returnBook(reader, theArena);
+    assertEquals(Code.SUCCESS, csumb.removeReader(reader));
+    assertEquals(0, csumb.listReaders());
   }
 
   @Test
   void convertInt() {
+    String correctInt = "2020";
+    String badInt = "20.3";
+
+    //Test successful return of proper integer
+    assertEquals(2020, Library.convertInt(correctInt, Code.SUCCESS));
+
+    //Test return of bad integer with BOOK_COUNT_ERROR
+    assertEquals(Code.BOOK_COUNT_ERROR.getCode(),
+        Library.convertInt(badInt, Code.BOOK_COUNT_ERROR));
+
+    //Test return of bad integer with PAGE_COUNT_ERROR
+    assertEquals(Code.PAGE_COUNT_ERROR.getCode(),
+        Library.convertInt(badInt, Code.PAGE_COUNT_ERROR));
+
+    //Test return of bad integer with DATE_CONVERSION_ERROR
+    assertEquals(Code.DATE_CONVERSION_ERROR.getCode(),
+        Library.convertInt(badInt, Code.DATE_CONVERSION_ERROR));
+
+    assertEquals(Code.SHELF_NUMBER_PARSE_ERROR.getCode(),
+        Library.convertInt(badInt, Code.SHELF_NUMBER_PARSE_ERROR));
   }
 
   @Test
   void convertDate() {
     String correctDate = "2020-01-01";
     String invalidDate = "202-13-001";
+    String badDate = "20$3-01-01";
     Code code = Code.SUCCESS;
 
-    assertEquals(LocalDate.of(2020, 1, 1), csumb.convertDate(correctDate, code));
-    assertEquals(LocalDate.of(1970, 1, 1), csumb.convertDate(invalidDate, code));
+    assertEquals(LocalDate.of(2020, 1, 1), Library.convertDate(correctDate, code));
+    assertEquals(LocalDate.of(1970, 1, 1), Library.convertDate(invalidDate, code));
+    assertEquals(LocalDate.of(1970, 1, 1), Library.convertDate(badDate, code));
   }
 
   @Test
   void getLibraryCardNumber() {
+    csumb.init(library00);
+    int readerCount = csumb.listReaders();
+    assertEquals(readerCount+1, Library.getLibraryCardNumber());
+
+    //Add a reader with a card count well above current level, and test to ensure that represents
+    //the new card number
+    int newCardNumber = readerCount + 5;
+    Reader reader = new Reader(newCardNumber, "Bob Smith", "555-555-0001");
+    csumb.addReader(reader);
+    assertEquals(newCardNumber + 1, Library.getLibraryCardNumber());
   }
 }
