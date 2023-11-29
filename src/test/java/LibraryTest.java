@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * @author Bryan Zanoli
  * @since October 30, 2023
- *
+ * <br>
  * Abstract: Unit tests for all relevant Library class methods. Excludes basic getters and setters,
  * which pass testing through other calling methods.
  */

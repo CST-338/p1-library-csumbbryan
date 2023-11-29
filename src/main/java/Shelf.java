@@ -21,7 +21,7 @@ public class Shelf {
    * Constant value used to keep track of the index for where {@link Shelf#subject}
    * is stored in the import file.
    */
-  public static final int SUBJECT = 1;
+  public static final int SUBJECT_ = 1;
   /**
    * The integer which represents the given Shelf objects shelf number. Used to identify the shelf,
    * along with the subject.
